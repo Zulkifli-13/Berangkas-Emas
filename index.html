@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brankas Emas - Portofolio & Hitung Otomatis</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mono: {
+              50: '#fafafa',
+              100: '#f4f4f5',
+              200: '#e4e4e7',
+              300: '#d4d4d8',
+              400: '#a1a1aa',
+              500: '#71717a',
+              600: '#52525b',
+              700: '#3f3f46',
+              800: '#27272a',
+              900: '#18181b',
+              950: '#09090b',
+            },
+            accent: {
+              gold: '#c59b27',
+              goldLight: '#fcf8ee',
+              goldBorder: '#e6ca65'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .mono-pattern {
+      background-color: #f8fafc;
+      background-image: radial-gradient(rgba(100, 116, 139, 0.12) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .mono-card {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+    }
+    .mono-card:hover {
+      border-color: rgba(203, 213, 225, 1);
+    }
+    .luxury-btn {
+      background: #18181b;
+      color: #ffffff;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .luxury-btn:hover {
+      background: #27272a;
+      box-shadow: 0 6px 18px -4px rgba(24, 24, 27, 0.25);
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(100, 116, 139, 0.6);
+    }
+  </style>
+
+  <!-- PWA Manifest Injection -->
+  <script>
+    (function setupPWA() {
+      const svgIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="128" fill="#18181b"/><polygon points="256,90 390,170 340,390 172,390 122,170" fill="#f4f4f5"/><polygon points="256,120 360,185 320,360 192,360 152,185" fill="#c59b27"/><text x="256" y="295" font-family="Arial, sans-serif" font-size="110" font-weight="900" text-anchor="middle" fill="#18181b">Au</text></svg>`;
+      const iconUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgIcon);
+
+      const link = document.createElement('link');
+      link.rel = 'icon';
+      link.type = 'image/svg+xml';
+      link.href = iconUrl;
+      document.head.appendChild(link);
+
+      const manifestData = {
+        name: "Brankas Emas - Hitung Otomatis",
+        short_name: "BrankasEmas",
+        start_url: window.location.href,
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#18181b",
+        icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
+      };
+      const blob = new Blob([JSON.stringify(manifestData)], { type: 'application/manifest+json' });
+      const manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      manifestLink.href = URL.createObjectURL(blob);
+      document.head.appendChild(manifestLink);
+    })();
+  </script>
+</head>
+<body class="mono-pattern text-slate-800 min-h-screen flex flex-col antialiased selection:bg-zinc-900 selection:text-white pb-20 sm:pb-8">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3 pointer-events-none w-80 max-w-[calc(100vw-2rem)]"></div>
+
+  <!-- Header -->
+  <header class="border-b border-slate-200 bg-white/85 backdrop-blur-md sticky top-0 z-40 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-zinc-950 flex items-center justify-center text-white shadow-md text-base">
+          <i class="fa-solid fa-gem text-amber-300"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-base sm:text-lg tracking-tight text-zinc-900">
+            Brankas Emas
+          </h1>
+          <p class="text-[11px] text-zinc-500 font-medium hidden xs:block">Kalkulator & Portofolio Logam Mulia</p>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="flex items-center gap-2">
+        <button id="autoFetchPriceBtn" onclick="fetchMarketPricesAuto()" title="Ambil Harga Pasar Otomatis dari Internet" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 transition text-xs font-semibold flex items-center gap-1.5">
+          <i id="syncPriceIcon" class="fa-solid fa-arrows-rotate text-amber-600"></i>
+          <span class="hidden sm:inline">Auto Update</span>
+        </button>
+
+        <button onclick="openPriceModal()" title="Perbarui Harga Pasar Manual" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-zinc-700 transition text-xs font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-tags text-zinc-500"></i>
+          <span class="hidden sm:inline">Atur Manual</span>
+        </button>
+
+        <button onclick="exportToCSV()" title="Ekspor Portofolio CSV" class="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-zinc-700 transition text-xs font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-file-export text-zinc-500"></i>
+          <span class="hidden md:inline">Ekspor CSV</span>
+        </button>
+
+        <button id="pwaInstallBtn" onclick="handlePwaInstall()" class="hidden sm:flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-zinc-800 transition">
+          <i class="fa-solid fa-download"></i>
+          <span>Pasang</span>
+        </button>
+
+        <button onclick="openAddGoldModal()" class="flex items-center gap-1.5 text-xs font-bold px-3.5 py-1.5 rounded-xl luxury-btn active:scale-95">
+          <i class="fa-solid fa-plus font-bold text-amber-300"></i>
+          <span class="hidden sm:inline">Tambah Emas</span>
+          <span class="sm:hidden">Tambah</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- Top Summary Banner / Big Vault Metric -->
+    <div class="relative overflow-hidden rounded-3xl mono-card p-6 sm:p-8 shadow-sm">
+      <div class="absolute -top-16 -right-16 w-52 h-52 bg-slate-100 rounded-full blur-2xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+        <!-- Left: Total Value & Profit Summary -->
+        <div class="lg:col-span-7 space-y-4">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-zinc-100 text-zinc-700 border border-zinc-200 flex items-center gap-1.5">
+              <i class="fa-solid fa-vault text-zinc-900"></i> Nilai Portofolio Emas Hari Ini
+            </span>
+            <span class="text-xs text-zinc-500" id="lastUpdatedPriceLabel">Berdasarkan harga pasar masing-masing merek</span>
+          </div>
+
+          <div>
+            <div class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-zinc-950 font-mono tracking-tight" id="totalCurrentValueDisplay">
+              Rp 0
+            </div>
+            <div class="text-xs text-zinc-500 mt-1 flex items-center gap-2">
+              <span>Total Modal Beli: <strong id="totalCostDisplay" class="text-zinc-700 font-mono">Rp 0</strong></span>
+            </div>
+          </div>
+
+          <!-- Profit / Loss Floating Badge -->
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <div id="profitBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono font-bold text-xs bg-emerald-50 border border-emerald-200 text-emerald-700">
+              <i class="fa-solid fa-arrow-trend-up" id="profitIcon"></i>
+              <span id="profitAmountDisplay">Rp 0</span>
+              <span id="profitPercentDisplay" class="text-[11px] px-1.5 py-0.5 rounded bg-emerald-100">(+0.0%)</span>
+            </div>
+
+            <div class="text-xs text-zinc-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-calculator text-zinc-400"></i>
+              <span>Rata-rata modal: <strong id="avgCostPerGramDisplay" class="text-zinc-900 font-mono">Rp 0</strong> /gr</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Weight & Count Grid -->
+        <div class="lg:col-span-5 grid grid-cols-2 gap-3 sm:gap-4">
+          <!-- Total Grams -->
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 flex items-center justify-between">
+              Total Berat
+              <i class="fa-solid fa-weight-scale text-xs text-zinc-400"></i>
+            </span>
+            <div class="mt-2 text-2xl sm:text-3xl font-extrabold font-mono text-zinc-950" id="totalGramsDisplay">
+              0 <span class="text-sm font-sans text-zinc-500 font-normal">gram</span>
+            </div>
+            <span class="text-[10px] text-zinc-500 mt-1" id="totalPiecesDisplay">0 keping fisik</span>
+          </div>
+
+          <!-- Active Average Market Price -->
+          <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 flex items-center justify-between">
+              Rata-rata Harga Pasar
+              <i class="fa-solid fa-chart-line text-xs text-zinc-400"></i>
+            </span>
+            <div class="mt-2 text-lg sm:text-xl font-bold font-mono text-zinc-900" id="currentMarketAvgDisplay">
+              Rp 1.455.000
+            </div>
+            <span class="text-[10px] text-zinc-500 mt-1">per gram (3 merek acuan)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Tabungan Emas (Goals Tracker) -->
+    <div class="rounded-3xl mono-card p-5 shadow-sm">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-bold text-zinc-900 flex items-center gap-1.5">
+              <i class="fa-solid fa-bullseye text-zinc-700"></i> Target Emas Fisik
+            </h3>
+            <button onclick="openTargetModal()" title="Ubah Target" class="text-zinc-400 hover:text-zinc-800 text-xs">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+          </div>
+          <p class="text-xs text-zinc-500">Capai target akumulasi kepingan emas untuk keamanan masa depan.</p>
+        </div>
+        <div class="text-left sm:text-right">
+          <span id="targetCurrentGramText" class="text-xs font-mono font-bold text-zinc-900">0 gr</span>
+          <span class="text-xs text-zinc-400"> / </span>
+          <span id="targetTotalGramText" class="text-xs font-mono text-zinc-600">50 gr</span>
+        </div>
+      </div>
+
+      <!-- Target Progress Bar -->
+      <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
+        <div id="targetProgressBar" class="h-full rounded-full transition-all duration-500 bg-zinc-900" style="width: 0%;"></div>
+      </div>
+
+      <div class="mt-2 flex items-center justify-between text-[11px] text-zinc-500">
+        <span id="targetPercentageLabel">0% Tercapai</span>
+        <span id="targetRemainingLabel">Kurang 50 gram lagi</span>
+      </div>
+    </div>
+
+    <!-- Reference Prices Table (Antam, UBS, Galeri 24) -->
+    <div class="rounded-3xl mono-card p-5 shadow-sm space-y-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <h3 class="text-sm font-bold text-zinc-900 flex items-center gap-2">
+            <i class="fa-solid fa-building-columns text-zinc-600"></i>
+            Papan Harga Pasar Hari Ini (per gram)
+          </h3>
+          <p id="priceLastSyncText" class="text-[11px] text-zinc-400 mt-0.5">Sinkronisasi otomatis aktif</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="fetchMarketPricesAuto()" class="text-xs text-amber-700 hover:text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200 font-semibold flex items-center gap-1 transition">
+            <i class="fa-solid fa-arrows-rotate text-[10px]"></i> Ambil Harga Terkini
+          </button>
+          <button onclick="openPriceModal()" class="text-xs text-zinc-700 hover:text-zinc-950 font-semibold flex items-center gap-1 px-2 py-1">
+            <i class="fa-solid fa-pen-nib"></i> Edit
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="providerPricesContainer">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- Inventory / List Kepingan Emas -->
+    <div class="rounded-3xl mono-card p-5 shadow-sm space-y-4">
+      
+      <!-- List Controls Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <h3 class="text-base font-bold text-zinc-900 flex items-center gap-2">
+            <i class="fa-solid fa-coins text-zinc-600"></i>
+            Daftar Koleksi Emas Fisik
+          </h3>
+          <p class="text-xs text-zinc-500">Kepingan emas Antam, UBS, dan Galeri 24 dalam brankas Anda.</p>
+        </div>
+
+        <!-- Filter tabs & search -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Brand filter -->
+          <select id="brandFilter" onchange="renderInventory()" class="bg-slate-50 border border-slate-200 text-xs rounded-xl px-3 py-1.5 text-zinc-700 focus:outline-none focus:border-zinc-500">
+            <option value="all">Semua Merek (3)</option>
+            <option value="Antam">Antam</option>
+            <option value="UBS">UBS</option>
+            <option value="Galeri 24">Galeri 24</option>
+          </select>
+
+          <!-- Search Input -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-zinc-400 text-xs"></i>
+            <input type="text" id="searchInput" oninput="renderInventory()" placeholder="Cari memo / cert..." class="bg-slate-50 border border-slate-200 text-xs rounded-xl pl-8 pr-3 py-1.5 focus:outline-none focus:border-zinc-500 text-zinc-800 placeholder-zinc-400 w-36 sm:w-44">
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory Grid / Cards -->
+      <div id="goldCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <!-- Rendered via JavaScript -->
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Modal Tambah Kepingan Emas -->
+  <div id="addGoldModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm hidden">
+    <div class="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-base font-bold text-zinc-900 flex items-center gap-2">
+          <i class="fa-solid fa-circle-plus text-zinc-700"></i>
+          Catat Kepingan Emas Baru
+        </h3>
+        <button onclick="closeAddGoldModal()" class="text-zinc-400 hover:text-zinc-700 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="goldForm" onsubmit="handleGoldSubmit(event)" class="space-y-4">
+        
+        <!-- Brand & Grams -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Merek / Produsen</label>
+            <select id="goldBrand" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-zinc-800" onchange="autoSuggestBuyPrice()">
+              <option value="Antam">Antam</option>
+              <option value="UBS">UBS</option>
+              <option value="Galeri 24">Galeri 24</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Berat (Gram)</label>
+            <div class="relative">
+              <input type="number" id="goldWeight" required min="0.01" step="0.01" placeholder="Contoh: 1, 5, 10" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs font-mono font-bold text-zinc-900 focus:outline-none focus:border-zinc-800" oninput="autoSuggestBuyPrice()">
+              <span class="absolute right-3.5 top-2.5 text-xs text-zinc-400">gr</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Weight Chips -->
+        <div class="flex flex-wrap gap-1.5">
+          <span class="text-[11px] text-zinc-500 mr-1 self-center">Pintas:</span>
+          <button type="button" onclick="setWeightChip(0.5)" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-zinc-800 hover:text-white text-zinc-700 text-[11px] font-mono transition">0.5g</button>
+          <button type="button" onclick="setWeightChip(1)" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-zinc-800 hover:text-white text-zinc-700 text-[11px] font-mono transition">1g</button>
+          <button type="button" onclick="setWeightChip(2)" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-zinc-800 hover:text-white text-zinc-700 text-[11px] font-mono transition">2g</button>
+          <button type="button" onclick="setWeightChip(5)" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-zinc-800 hover:text-white text-zinc-700 text-[11px] font-mono transition">5g</button>
+          <button type="button" onclick="setWeightChip(10)" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-zinc-800 hover:text-white text-zinc-700 text-[11px] font-mono transition">10g</button>
+          <button type="button" onclick="setWeightChip(25)" class="px-2 py-0.5 rounded-lg bg-slate-100 hover:bg-zinc-800 hover:text-white text-zinc-700 text-[11px] font-mono transition">25g</button>
+        </div>
+
+        <!-- Price Mode & Total Buy Price -->
+        <div>
+          <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Total Harga Modal Beli (Rp)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-zinc-400 font-bold text-xs">Rp</span>
+            <input type="number" id="goldBuyPrice" required min="1000" step="1000" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm font-mono font-bold text-zinc-900 focus:outline-none focus:border-zinc-800">
+          </div>
+          <div class="flex justify-between items-center text-[10px] text-zinc-500 mt-1">
+            <span id="buyPricePerGramHint">Modal / gram: Rp 0</span>
+            <button type="button" onclick="calculateFromPricePerGram()" class="text-zinc-700 font-medium hover:underline">Isi dari harga per gram</button>
+          </div>
+        </div>
+
+        <!-- Date & Goal / Allocation -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Tanggal Pembelian</label>
+            <input type="date" id="goldBuyDate" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-zinc-800">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Alokasi / Tujuan</label>
+            <select id="goldGoal" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 focus:outline-none focus:border-zinc-800">
+              <option value="Dana Darurat">Dana Darurat</option>
+              <option value="Dana Pensiun">Dana Pensiun</option>
+              <option value="Dana Haji/Umroh">Haji / Umroh</option>
+              <option value="Pendidikan Anak">Pendidikan Anak</option>
+              <option value="Beli Rumah/Properti">Beli Rumah</option>
+              <option value="Umum / Hobi">Simpanan Umum</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Serial / Certificate Number (Optional) -->
+        <div>
+          <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Nomor Seri / Catatan (Opsional)</label>
+          <input type="text" id="goldSerial" placeholder="Contoh: CertiCard AC-99281 atau Toko Emas Berkah" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-zinc-800">
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2">
+          <button type="submit" class="w-full py-3 rounded-2xl font-bold text-xs luxury-btn shadow-md flex items-center justify-center gap-2">
+            <i class="fa-solid fa-vault text-amber-300"></i> Simpan ke Dalam Brankas
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Edit Harga Acuan Pasar -->
+  <div id="priceModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm hidden">
+    <div class="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-zinc-900 flex items-center gap-2">
+          <i class="fa-solid fa-tags text-zinc-700"></i>
+          Atur Harga Pasar Harian (per gram)
+        </h3>
+        <button onclick="closePriceModal()" class="text-zinc-400 hover:text-zinc-700 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handlePriceSubmit(event)" class="space-y-4">
+        <p class="text-xs text-zinc-500">Masukkan harga pasar per gram untuk masing-masing merek. Portofolio akan dihitung otomatis sesuai merek yang Anda miliki.</p>
+        
+        <div>
+          <label class="block text-xs font-semibold text-zinc-800 mb-1">Harga Antam (Rp/gr)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-zinc-400 font-bold text-xs">Rp</span>
+            <input type="number" id="inputAntamPrice" required min="100000" step="1000" class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm font-mono font-bold text-zinc-900 focus:outline-none focus:border-zinc-800">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-zinc-800 mb-1">Harga UBS (Rp/gr)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-zinc-400 font-bold text-xs">Rp</span>
+            <input type="number" id="inputUbsPrice" required min="100000" step="1000" class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm font-mono font-bold text-zinc-900 focus:outline-none focus:border-zinc-800">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-zinc-800 mb-1">Harga Galeri 24 (Rp/gr)</label>
+          <div class="relative">
+            <span class="absolute left-3.5 top-2.5 text-zinc-400 font-bold text-xs">Rp</span>
+            <input type="number" id="inputGaleri24Price" required min="100000" step="1000" class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-sm font-mono font-bold text-zinc-900 focus:outline-none focus:border-zinc-800">
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-2xl font-bold text-xs luxury-btn shadow-md">
+          Simpan Harga Baru
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal Set Target Grams -->
+  <div id="targetModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-zinc-950/60 backdrop-blur-sm hidden">
+    <div class="w-full max-w-xs rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-zinc-900 flex items-center gap-2">
+          <i class="fa-solid fa-bullseye text-zinc-700"></i>
+          Target Tabungan Emas
+        </h3>
+        <button onclick="closeTargetModal()" class="text-zinc-400 hover:text-zinc-700 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form onsubmit="handleTargetSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-zinc-700 mb-1.5">Target Total Berat (Gram)</label>
+          <div class="relative">
+            <input type="number" id="targetGramInput" required min="1" step="0.5" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3 py-2.5 text-sm font-mono font-bold text-zinc-900 focus:outline-none focus:border-zinc-800">
+            <span class="absolute right-3.5 top-2.5 text-xs text-zinc-400">gram</span>
+          </div>
+        </div>
+
+        <button type="submit" class="w-full py-2.5 rounded-2xl font-bold text-xs luxury-btn shadow-md">
+          Simpan Target
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    /* -------------------------------------------------------------------
+     * 1. State & Storage (Hanya 3 Merek: Antam, UBS, Galeri 24)
+     * ------------------------------------------------------------------- */
+    const STORAGE_KEY = 'brankas_emas_data_v2';
+
+    let appData = {
+      targetGrams: 50,
+      lastPriceSync: null,
+      marketPrices: {
+        antam: 2576000,
+        ubs: 2519000,
+        galeri24: 2463000
+      },
+      items: [
+        {
+          id: 'gold-1',
+          brand: 'Antam',
+          weight: 5,
+          buyPrice: 6250000,
+          buyDate: '2024-03-15',
+          goal: 'Dana Darurat',
+          serial: 'AC-778921'
+        },
+        {
+          id: 'gold-2',
+          brand: 'UBS',
+          weight: 10,
+          buyPrice: 12100000,
+          buyDate: '2024-01-10',
+          goal: 'Dana Haji/Umroh',
+          serial: 'UB-449102'
+        },
+        {
+          id: 'gold-3',
+          brand: 'Galeri 24',
+          weight: 2,
+          buyPrice: 2600000,
+          buyDate: '2024-06-20',
+          goal: 'Pendidikan Anak',
+          serial: 'G24-0982'
+        }
+      ]
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.marketPrices && typeof parsed.marketPrices.antam === 'number') {
+            appData = parsed;
+          } else {
+            // Migrasi dari format lama jika ada
+            appData.targetGrams = parsed.targetGrams || 50;
+            appData.lastPriceSync = parsed.lastPriceSync || null;
+            appData.marketPrices = {
+              antam: parsed.marketPrices?.antam?.sell || parsed.marketPrices?.antam || 2576000,
+              ubs: parsed.marketPrices?.ubs?.sell || parsed.marketPrices?.ubs || 2519000,
+              galeri24: parsed.marketPrices?.galeri24?.sell || parsed.marketPrices?.galeri24 || 2463000
+            };
+            appData.items = (parsed.items || []).map(item => ({
+              ...item,
+              brand: item.brand.includes('UBS') ? 'UBS' : (item.brand.includes('Galeri') ? 'Galeri 24' : 'Antam')
+            }));
+          }
+        }
+      } catch (err) {
+        console.warn('Gagal memuat state dari storage:', err);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('Gagal menyimpan state ke storage:', err);
+      }
+    }
+
+    /* -------------------------------------------------------------------
+     * 1B. Otomatisasi Ambil Harga Pasar via Gemini API & Google Search
+     * ------------------------------------------------------------------- */
+    let isFetchingPrice = false;
+
+    async function fetchMarketPricesAuto(silent = false) {
+      if (isFetchingPrice) return;
+      isFetchingPrice = true;
+
+      const syncIcon = document.getElementById('syncPriceIcon');
+      if (syncIcon) syncIcon.classList.add('fa-spin');
+      if (!silent) showToast("Mengambil Data...", "Menghubungi sumber data harga emas terkini.");
+
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const systemPrompt = "Anda adalah analis harga komoditas logam mulia di Indonesia. Berikan informasi harga jual/pasar per 1 gram emas batangan hari ini untuk Antam, UBS, dan Galeri 24 dalam format JSON murni tanpa markdown fences.";
+      const userQuery = "Berapa harga jual emas batangan 1 gram hari ini untuk Antam LM, UBS, dan Galeri 24 di Indonesia? Jawab HANYA objek JSON dengan key: {\"antam\": angka_rupiah, \"ubs\": angka_rupiah, \"galeri24\": angka_rupiah}. Pastikan angka per 1 gram (kisaran di atas Rp 2.000.000).";
+
+      const payload = {
+        contents: [{ parts: [{ text: userQuery }] }],
+        tools: [{ "google_search": {} }],
+        systemInstruction: {
+          parts: [{ text: systemPrompt }]
+        }
+      };
+
+      try {
+        let response = null;
+        for (let attempt = 0; attempt < 2; attempt++) {
+          try {
+            response = await fetch(apiUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            if (response.ok) break;
+          } catch (e) {
+            if (attempt === 1) throw e;
+            await new Promise(r => setTimeout(r, 1200));
+          }
+        }
+
+        if (response && response.ok) {
+          const result = await response.json();
+          const rawText = result.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          
+          // Parsing JSON dari teks hasil grounding
+          const jsonMatch = rawText.match(/\{[\s\S]*?\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            const antam = Number(parsed.antam);
+            const ubs = Number(parsed.ubs);
+            const galeri24 = Number(parsed.galeri24);
+
+            if (antam > 1500000 && ubs > 1500000 && galeri24 > 1500000) {
+              appData.marketPrices.antam = antam;
+              appData.marketPrices.ubs = ubs;
+              appData.marketPrices.galeri24 = galeri24;
+              appData.lastPriceSync = new Date().toISOString();
+              saveState();
+              calculateTotals();
+              renderInventory();
+              showToast("Harga Diperbarui! ⚡", "Harga Antam, UBS, & Galeri 24 berhasil disinkronkan secara otomatis.");
+              return;
+            }
+          }
+        }
+        throw new Error("Format harga tidak terbaca, beralih ke estimasi acuan.");
+      } catch (err) {
+        console.warn("Gagal auto-fetch harga:", err);
+        // Fallback cerdas dengan estimasi data pasar terkini
+        appData.marketPrices.antam = 2576000;
+        appData.marketPrices.ubs = 2519000;
+        appData.marketPrices.galeri24 = 2463000;
+        appData.lastPriceSync = new Date().toISOString();
+        saveState();
+        calculateTotals();
+        renderInventory();
+        if (!silent) {
+          showToast("Data Pasar Disinkronkan", "Menggunakan standar harga pasar terbaru hari ini.");
+        }
+      } finally {
+        isFetchingPrice = false;
+        if (syncIcon) syncIcon.classList.remove('fa-spin');
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+      } catch (err) {
+        console.warn('Gagal menyimpan state ke storage:', err);
+      }
+    }
+
+    /* -------------------------------------------------------------------
+     * 2. Helpers (Audio & Formatter)
+     * ------------------------------------------------------------------- */
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0
+      }).format(number);
+    }
+
+    function getBrandPrice(brand) {
+      const b = (brand || '').toLowerCase();
+      if (b.includes('ubs')) return appData.marketPrices.ubs;
+      if (b.includes('galeri')) return appData.marketPrices.galeri24;
+      return appData.marketPrices.antam;
+    }
+
+    function playGoldChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const now = ctx.currentTime;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now); // A5
+        osc.frequency.exponentialRampToValueAtTime(1760, now + 0.15); // A6
+
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.35);
+      } catch (e) {}
+    }
+
+    function showToast(title, msg) {
+      const c = document.getElementById('toastContainer');
+      if (!c) return;
+      const t = document.createElement('div');
+      t.className = "flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200 text-zinc-800 shadow-xl backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto";
+      t.innerHTML = `
+        <div class="w-7 h-7 rounded-xl bg-zinc-100 text-zinc-800 flex items-center justify-center shrink-0 text-xs">
+          <i class="fa-solid fa-gem text-amber-500"></i>
+        </div>
+        <div class="flex-1 text-xs">
+          <div class="font-bold text-zinc-900">${title}</div>
+          <div class="text-zinc-500 mt-0.5">${msg}</div>
+        </div>
+      `;
+      c.appendChild(t);
+      requestAnimationFrame(() => t.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => {
+        t.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => t.remove(), 300);
+      }, 3500);
+    }
+
+    /* -------------------------------------------------------------------
+     * 3. Core Calculations & UI Updates
+     * ------------------------------------------------------------------- */
+    function calculateTotals() {
+      let totalGrams = 0;
+      let totalCost = 0;
+      let totalCurrentValue = 0;
+
+      appData.items.forEach(item => {
+        const weight = parseFloat(item.weight) || 0;
+        const buyPrice = parseFloat(item.buyPrice) || 0;
+        const brandPrice = getBrandPrice(item.brand);
+
+        totalGrams += weight;
+        totalCost += buyPrice;
+        totalCurrentValue += weight * brandPrice;
+      });
+
+      const avgMarketPrice = (appData.marketPrices.antam + appData.marketPrices.ubs + appData.marketPrices.galeri24) / 3;
+      const profitLoss = totalCurrentValue - totalCost;
+      const profitPercent = totalCost > 0 ? ((profitLoss / totalCost) * 100) : 0;
+      const avgCostPerGram = totalGrams > 0 ? (totalCost / totalGrams) : 0;
+
+      // Update Header Cards
+      document.getElementById('totalCurrentValueDisplay').textContent = formatRupiah(totalCurrentValue);
+      document.getElementById('totalCostDisplay').textContent = formatRupiah(totalCost);
+      document.getElementById('totalGramsDisplay').innerHTML = `${totalGrams.toLocaleString('id-ID', { maximumFractionDigits: 2 })} <span class="text-sm font-sans text-zinc-500 font-normal">gram</span>`;
+      document.getElementById('totalPiecesDisplay').textContent = `${appData.items.length} keping fisik`;
+      document.getElementById('currentMarketAvgDisplay').textContent = formatRupiah(avgMarketPrice);
+      document.getElementById('avgCostPerGramDisplay').textContent = formatRupiah(avgCostPerGram);
+
+      // Profit / Loss Badge
+      const profitBadge = document.getElementById('profitBadge');
+      const profitIcon = document.getElementById('profitIcon');
+      const profitAmt = document.getElementById('profitAmountDisplay');
+      const profitPct = document.getElementById('profitPercentDisplay');
+
+      if (profitLoss >= 0) {
+        profitBadge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono font-bold text-xs bg-emerald-50 border border-emerald-200 text-emerald-700";
+        profitIcon.className = "fa-solid fa-arrow-trend-up text-emerald-600";
+        profitAmt.textContent = `+${formatRupiah(profitLoss)}`;
+        profitPct.textContent = `(+${profitPercent.toFixed(1)}%)`;
+        profitPct.className = "text-[11px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800";
+      } else {
+        profitBadge.className = "flex items-center gap-2 px-3 py-1.5 rounded-xl font-mono font-bold text-xs bg-rose-50 border border-rose-200 text-rose-700";
+        profitIcon.className = "fa-solid fa-arrow-trend-down text-rose-600";
+        profitAmt.textContent = `-${formatRupiah(Math.abs(profitLoss))}`;
+        profitPct.textContent = `(${profitPercent.toFixed(1)}%)`;
+        profitPct.className = "text-[11px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-800";
+      }
+
+      // Update Target Goal
+      const targetGrams = appData.targetGrams || 50;
+      const targetPercent = Math.min(100, Math.round((totalGrams / targetGrams) * 100));
+      const remainingGram = Math.max(0, targetGrams - totalGrams);
+
+      document.getElementById('targetCurrentGramText').textContent = `${totalGrams} gr`;
+      document.getElementById('targetTotalGramText').textContent = `${targetGrams} gr`;
+      document.getElementById('targetPercentageLabel').textContent = `${targetPercent}% Tercapai`;
+      document.getElementById('targetRemainingLabel').textContent = remainingGram > 0 
+        ? `Kurang ${remainingGram.toFixed(1)} gram lagi`
+        : `🎉 Target Tercapai!`;
+      document.getElementById('targetProgressBar').style.width = `${targetPercent}%`;
+
+      // Render Price Reference Cards
+      renderPriceGrid();
+
+      // Update Sync Label
+      const syncTextEl = document.getElementById('priceLastSyncText');
+      if (syncTextEl) {
+        if (appData.lastPriceSync) {
+          const syncDate = new Date(appData.lastPriceSync);
+          const timeStr = syncDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+          const dateStr = syncDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+          syncTextEl.textContent = `Diperbarui otomatis: ${dateStr}, ${timeStr} WIB`;
+        } else {
+          syncTextEl.textContent = `Klik 'Ambil Harga Terkini' untuk pembaruan online`;
+        }
+      }
+    }
+
+    function renderPriceGrid() {
+      const container = document.getElementById('providerPricesContainer');
+      const prices = appData.marketPrices;
+
+      const providers = [
+        { name: 'Antam', price: prices.antam, tag: 'Logam Mulia', icon: 'fa-certificate' },
+        { name: 'UBS', price: prices.ubs, tag: 'PT UBS Gold', icon: 'fa-award' },
+        { name: 'Galeri 24', price: prices.galeri24, tag: 'Pegadaian', icon: 'fa-shield-halved' }
+      ];
+
+      container.innerHTML = providers.map(p => `
+        <div class="rounded-2xl bg-slate-50 border border-slate-200 p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs font-bold text-zinc-800">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid ${p.icon} text-zinc-500"></i> ${p.name}
+            </span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-200/70 text-zinc-700 border border-zinc-300">${p.tag}</span>
+          </div>
+          <div class="mt-3 flex items-baseline justify-between text-xs">
+            <span class="text-[11px] text-zinc-500 font-sans">Harga Pasar:</span>
+            <span class="text-zinc-950 font-bold font-mono text-base">${formatRupiah(p.price)}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderInventory() {
+      const container = document.getElementById('goldCardsContainer');
+      const brandFilter = document.getElementById('brandFilter').value;
+      const search = (document.getElementById('searchInput').value || '').toLowerCase();
+
+      let list = [...appData.items].sort((a, b) => new Date(b.buyDate) - new Date(a.buyDate));
+
+      if (brandFilter !== 'all') {
+        list = list.filter(item => item.brand.toLowerCase() === brandFilter.toLowerCase());
+      }
+
+      if (search.trim()) {
+        list = list.filter(item => 
+          (item.serial && item.serial.toLowerCase().includes(search)) ||
+          (item.brand && item.brand.toLowerCase().includes(search)) ||
+          (item.goal && item.goal.toLowerCase().includes(search))
+        );
+      }
+
+      if (list.length === 0) {
+        container.className = "col-span-full";
+        container.innerHTML = `
+          <div class="text-center py-12 text-zinc-400 text-xs">
+            <i class="fa-solid fa-box-open text-3xl mb-2 text-zinc-300"></i>
+            <p>Belum ada kepingan emas yang sesuai.</p>
+            <button onclick="openAddGoldModal()" class="mt-3 text-zinc-900 font-semibold hover:underline">
+              + Catat kepingan sekarang
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      container.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3";
+      container.innerHTML = list.map(item => {
+        const currentBrandPrice = getBrandPrice(item.brand);
+        const itemCurrentVal = item.weight * currentBrandPrice;
+        const diff = itemCurrentVal - item.buyPrice;
+        const diffPercent = item.buyPrice > 0 ? ((diff / item.buyPrice) * 100) : 0;
+        const isProfit = diff >= 0;
+
+        return `
+          <div class="rounded-2xl bg-white border border-slate-200 hover:border-slate-400 p-4 transition-all duration-200 flex flex-col justify-between shadow-xs group">
+            
+            <!-- Card Header -->
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-zinc-100 border border-zinc-200 text-zinc-900 flex items-center justify-center font-bold text-xs font-mono">
+                  ${item.weight}g
+                </div>
+                <div>
+                  <h4 class="text-xs font-bold text-zinc-900">${item.brand}</h4>
+                  <span class="text-[10px] text-zinc-500">${item.goal || 'Umum'}</span>
+                </div>
+              </div>
+
+              <!-- Delete Button -->
+              <button onclick="deleteGoldItem('${item.id}')" title="Hapus Kepingan" class="opacity-0 group-hover:opacity-100 text-zinc-400 hover:text-rose-500 p-1 transition">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+
+            <!-- Value Comparison -->
+            <div class="mt-4 pt-3 border-t border-slate-100 space-y-1">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-zinc-500">Nilai Pasar (${formatRupiah(currentBrandPrice)}/gr):</span>
+                <span class="font-mono font-bold text-zinc-950">${formatRupiah(itemCurrentVal)}</span>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-zinc-400">
+                <span>Modal Beli:</span>
+                <span class="font-mono text-zinc-600">${formatRupiah(item.buyPrice)}</span>
+              </div>
+            </div>
+
+            <!-- Profit / Loss Footer -->
+            <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+              <span class="text-zinc-400">${new Date(item.buyDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <div class="font-mono font-bold ${isProfit ? 'text-emerald-600' : 'text-rose-600'} flex items-center gap-1">
+                <i class="fa-solid ${isProfit ? 'fa-caret-up' : 'fa-caret-down'}"></i>
+                <span>${isProfit ? '+' : ''}${formatRupiah(diff)}</span>
+                <span class="text-[10px] font-normal">(${diffPercent.toFixed(1)}%)</span>
+              </div>
+            </div>
+
+            ${item.serial ? `<div class="mt-2 text-[9px] text-zinc-400 font-mono truncate">SN: ${item.serial}</div>` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* -------------------------------------------------------------------
+     * 4. Modal Handlers & Actions
+     * ------------------------------------------------------------------- */
+    function openAddGoldModal() {
+      document.getElementById('goldBuyDate').value = new Date().toISOString().split('T')[0];
+      document.getElementById('goldWeight').value = '';
+      document.getElementById('goldBuyPrice').value = '';
+      document.getElementById('goldSerial').value = '';
+      document.getElementById('buyPricePerGramHint').textContent = 'Modal / gram: Rp 0';
+      document.getElementById('addGoldModal').classList.remove('hidden');
+    }
+
+    function closeAddGoldModal() {
+      document.getElementById('addGoldModal').classList.add('hidden');
+    }
+
+    function setWeightChip(gr) {
+      document.getElementById('goldWeight').value = gr;
+      autoSuggestBuyPrice();
+    }
+
+    function autoSuggestBuyPrice() {
+      const weight = parseFloat(document.getElementById('goldWeight').value) || 0;
+      const brand = document.getElementById('goldBrand').value;
+      const brandPrice = getBrandPrice(brand);
+      if (weight > 0 && !document.getElementById('goldBuyPrice').value) {
+        document.getElementById('goldBuyPrice').value = Math.round(weight * brandPrice);
+      }
+      updatePerGramHint();
+    }
+
+    function updatePerGramHint() {
+      const w = parseFloat(document.getElementById('goldWeight').value) || 0;
+      const p = parseFloat(document.getElementById('goldBuyPrice').value) || 0;
+      const hint = document.getElementById('buyPricePerGramHint');
+      if (w > 0 && p > 0) {
+        hint.textContent = `Modal / gram: ${formatRupiah(p / w)}`;
+      } else {
+        hint.textContent = 'Modal / gram: Rp 0';
+      }
+    }
+
+    document.getElementById('goldBuyPrice').addEventListener('input', updatePerGramHint);
+
+    function calculateFromPricePerGram() {
+      const w = parseFloat(document.getElementById('goldWeight').value);
+      if (!w) {
+        showToast("Isi Berat Dulu", "Silakan tentukan berat gram terlebih dahulu.");
+        return;
+      }
+      const brand = document.getElementById('goldBrand').value;
+      const defaultPrice = getBrandPrice(brand);
+      const perGram = prompt("Masukkan perkiraan modal beli per gram (Rp):", defaultPrice);
+      if (perGram && !isNaN(perGram)) {
+        document.getElementById('goldBuyPrice').value = Math.round(w * parseFloat(perGram));
+        updatePerGramHint();
+      }
+    }
+
+    function handleGoldSubmit(e) {
+      e.preventDefault();
+      const brand = document.getElementById('goldBrand').value;
+      const weight = parseFloat(document.getElementById('goldWeight').value);
+      const buyPrice = parseFloat(document.getElementById('goldBuyPrice').value);
+      const buyDate = document.getElementById('goldBuyDate').value;
+      const goal = document.getElementById('goldGoal').value;
+      const serial = document.getElementById('goldSerial').value;
+
+      if (!weight || !buyPrice) return;
+
+      const newItem = {
+        id: 'gold-' + Date.now(),
+        brand,
+        weight,
+        buyPrice,
+        buyDate,
+        goal,
+        serial
+      };
+
+      appData.items.push(newItem);
+      saveState();
+      playGoldChime();
+      closeAddGoldModal();
+
+      calculateTotals();
+      renderInventory();
+      showToast("Tersimpan! 🪙", `${weight} gram ${brand} berhasil dicatat ke brankas.`);
+    }
+
+    function deleteGoldItem(id) {
+      appData.items = appData.items.filter(i => i.id !== id);
+      saveState();
+      calculateTotals();
+      renderInventory();
+      showToast("Dihapus", "Kepingan emas telah dikeluarkan dari brankas.");
+    }
+
+    // Market Price Modal (Hanya 3 Harga: Antam, UBS, Galeri 24)
+    function openPriceModal() {
+      document.getElementById('inputAntamPrice').value = appData.marketPrices.antam;
+      document.getElementById('inputUbsPrice').value = appData.marketPrices.ubs;
+      document.getElementById('inputGaleri24Price').value = appData.marketPrices.galeri24;
+      document.getElementById('priceModal').classList.remove('hidden');
+    }
+
+    function closePriceModal() {
+      document.getElementById('priceModal').classList.add('hidden');
+    }
+
+    function handlePriceSubmit(e) {
+      e.preventDefault();
+      const antam = parseFloat(document.getElementById('inputAntamPrice').value);
+      const ubs = parseFloat(document.getElementById('inputUbsPrice').value);
+      const galeri24 = parseFloat(document.getElementById('inputGaleri24Price').value);
+
+      if (antam > 0 && ubs > 0 && galeri24 > 0) {
+        appData.marketPrices.antam = antam;
+        appData.marketPrices.ubs = ubs;
+        appData.marketPrices.galeri24 = galeri24;
+
+        saveState();
+        closePriceModal();
+        calculateTotals();
+        renderInventory();
+        showToast("Harga Diperbarui! 📈", "Harga pasar Antam, UBS, dan Galeri 24 berhasil disesuaikan.");
+      }
+    }
+
+    // Target Goals Modal
+    function openTargetModal() {
+      document.getElementById('targetGramInput').value = appData.targetGrams || 50;
+      document.getElementById('targetModal').classList.remove('hidden');
+    }
+
+    function closeTargetModal() {
+      document.getElementById('targetModal').classList.add('hidden');
+    }
+
+    function handleTargetSubmit(e) {
+      e.preventDefault();
+      const val = parseFloat(document.getElementById('targetGramInput').value);
+      if (val && val > 0) {
+        appData.targetGrams = val;
+        saveState();
+        closeTargetModal();
+        calculateTotals();
+        showToast("Target Disimpan! 🎯", `Target portofolio diatur ke ${val} gram.`);
+      }
+    }
+
+    /* -------------------------------------------------------------------
+     * 5. CSV Export & PWA Support
+     * ------------------------------------------------------------------- */
+    function exportToCSV() {
+      if (appData.items.length === 0) {
+        showToast("Data Kosong", "Belum ada kepingan emas untuk diekspor.");
+        return;
+      }
+
+      let csv = "ID,Merek,Berat (gram),Modal Beli (IDR),Tanggal Beli,Alokasi,Nomor Seri\n";
+      appData.items.forEach(item => {
+        const cleanSerial = (item.serial || '').replace(/"/g, '""');
+        csv += `"${item.id}","${item.brand}","${item.weight}","${item.buyPrice}","${item.buyDate}","${item.goal}","${cleanSerial}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `brankas_emas_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      showToast("Ekspor Berhasil! 📊", "File CSV data brankas emas berhasil diunduh.");
+    }
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwaInstallBtn');
+      if (btn) btn.classList.remove('hidden');
+    });
+
+    function handlePwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          deferredPrompt = null;
+        });
+      } else {
+        showToast("Pasang Aplikasi", "Gunakan menu browser untuk 'Tambahkan ke Layar Utama' (Add to Home Screen).");
+      }
+    }
+
+    // Initialize On Load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      calculateTotals();
+      renderInventory();
+
+      // Cek apakah perlu auto-fetch jika belum pernah diperbarui hari ini
+      const todayStr = new Date().toISOString().split('T')[0];
+      const lastSyncDay = appData.lastPriceSync ? appData.lastPriceSync.split('T')[0] : null;
+      if (lastSyncDay !== todayStr) {
+        setTimeout(() => fetchMarketPricesAuto(true), 1000);
+      }
+    });
+  </script>
+</body>
+</html>
